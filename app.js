@@ -14,8 +14,59 @@ function money(v){return n(v).toLocaleString("vi-VN",{maximumFractionDigits:0})}
 function pct(v){return(n(v)*100).toLocaleString("vi-VN",{maximumFractionDigits:2})+"%"}
 function cls(v){return n(v)>=0?"good":"bad"} function clean(v){return String(v||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"")}
 function status(t){$("status").textContent=t} function today(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
-function isFirebaseConfigured(){let s=JSON.stringify(firebaseConfig||{});return firebaseConfig?.apiKey&&firebaseConfig?.projectId&&firebaseConfig?.authDomain&&!s.includes("DAN_")}
-function initFirebase(){try{if(!isFirebaseConfigured())throw Error("Chưa cấu hình Firebase. Có thể dùng offline.");const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);firebaseReady=true;onAuthStateChanged(auth,async u=>{user=u||null;if(u){ui.offline=false;$("auth").classList.add("hide");$("app").classList.remove("hide");$("userBadge").textContent=u.email||"Đã đăng nhập";await loadCloud();render();status("Đã đăng nhập")}else{$("auth").classList.remove("hide");$("app").classList.add("hide")}});$("authMsg").textContent="Firebase sẵn sàng."}catch(e){$("authMsg").textContent=e.message||String(e);firebaseReady=false}}
+function isFirebaseConfigured() {
+  return !!(
+    firebaseConfig &&
+    firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId
+  );
+}
+function initFirebase() {
+  try {
+    console.log("Firebase config:", firebaseConfig);
+
+    if (!isFirebaseConfigured()) {
+      throw new Error("Thiếu apiKey, authDomain hoặc projectId trong firebase-config.js");
+    }
+
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    firebaseReady = true;
+
+    onAuthStateChanged(auth, async u => {
+      user = u || null;
+
+      if (u) {
+        ui.offline = false;
+        $("authSection").classList.add("hide");
+        $("appSection").classList.remove("hide");
+        $("userBadge").textContent = u.email || "Đã đăng nhập";
+
+        try {
+          await loadCloud();
+          render();
+          status("Đã đăng nhập và tải dữ liệu");
+        } catch (err) {
+          console.error("Lỗi tải cloud:", err);
+          status("Đăng nhập được nhưng lỗi tải dữ liệu cloud");
+        }
+      } else {
+        $("authSection").classList.remove("hide");
+        $("appSection").classList.add("hide");
+        $("userBadge").textContent = "Chưa đăng nhập";
+      }
+    });
+
+    $("authMsg").textContent = "Firebase đã sẵn sàng. Bạn có thể đăng nhập hoặc đăng ký.";
+  } catch (e) {
+    firebaseReady = false;
+    console.error("Firebase init error:", e);
+    $("authMsg").textContent =
+      "Firebase lỗi: " + (e.message || e) + ". Có thể bấm Dùng offline.";
+  }
+}
 async function saveCloud(){saveLocal();if(!firebaseReady||!user||ui.offline){status("Đã lưu local");return}await setDoc(doc(db,"users",user.uid),{state,updatedAt:serverTimestamp()},{merge:true});status("Đã lưu đồng bộ")}
 async function loadCloud(){if(!firebaseReady||!user)return;let s=await getDoc(doc(db,"users",user.uid));if(s.exists()&&s.data().state){state={...base(),...s.data().state};saveLocal()}else await saveCloud()}
 function openOffline(){ui.offline=true;$("auth").classList.add("hide");$("app").classList.remove("hide");$("userBadge").textContent="Offline";render()}
