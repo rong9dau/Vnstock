@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Danh mục CP Local Realtime</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--text:#101828;--muted:#667085;--line:#e4e7ec;--primary:#0f766e;--green:#16a34a;--red:#dc2626;--blue:#2563eb;--amber:#b45309;--shadow:0 10px 24px rgba(16,32,51,.08)}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;z-index:9;background:linear-gradient(135deg,#0f766e,#0d9488);color:white;padding:14px;box-shadow:var(--shadow)}
+h1{margin:0;font-size:21px}header p{margin:4px 0 10px;font-size:13px;opacity:.9}
+main{max-width:1180px;margin:0 auto;padding:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:14px;margin:12px 0}
+.tabs{display:flex;gap:7px;overflow-x:auto}.tab{white-space:nowrap;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:9px 12px;font-weight:750}.tab.active{background:#fff;color:#0f766e}
+.section{display:none}.section.active{display:block}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.spacer{flex:1}
+input,select,button,textarea{font:inherit;border-radius:12px;border:1px solid var(--line);padding:10px 11px;background:white;min-height:42px}input,select,textarea{width:100%}
+button{border:0;color:white;background:var(--primary);font-weight:750;cursor:pointer}button.ghost{background:#eef2f7;color:#101828;border:1px solid var(--line)}button.blue{background:var(--blue)}button.red{background:var(--red)}button.gray{background:#475467}
+label span{display:block;color:var(--muted);font-size:12px;margin:0 0 4px 2px}.hide{display:none!important}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{background:#f9fafb;border:1px solid var(--line);border-radius:14px;padding:12px}.metric .label{color:var(--muted);font-size:12px}.metric .value{font-weight:800;font-size:18px;margin-top:3px}
+.formgrid{display:grid;grid-template-columns:1fr .7fr 1fr .8fr .8fr auto;gap:8px;align-items:end}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}th,td{text-align:right;border-bottom:1px solid var(--line);padding:9px 6px;white-space:nowrap;vertical-align:middle}th:first-child,td:first-child{text-align:left}th{position:sticky;top:0;background:#f9fafb;z-index:1;color:#344054;font-size:12px;text-transform:uppercase}th.sortable{cursor:pointer}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;max-height:560px;background:#fff}
+.good{color:var(--green)}.bad{color:var(--red)}.muted{color:var(--muted);font-size:13px}.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px}.ok{background:#ecfdf3;border:1px solid #bbf7d0;color:#166534;border-radius:12px;padding:10px}.pill{border-radius:999px;background:#eef2f7;color:#344054;padding:5px 10px;font-size:12px}.chip{border-radius:999px;background:#f2f4f7;border:1px solid var(--line);padding:7px 10px;font-size:13px}
+canvas{width:100%;height:310px;border:1px solid var(--line);border-radius:14px;background:#fff}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.authbox{max-width:520px;margin:24px auto}.left{text-align:left!important}.selrow{background:#ecfdf3}
+textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.two,.three{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr 1fr}.formgrid button{grid-column:1/-1}}
+@media(max-width:620px){main{padding:9px}.grid{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}th,td{font-size:13px;padding:8px 5px}canvas{height:260px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Danh mục CP Local Realtime</h1>
+<p>1 file HTML chạy local. Có internet thì fetch trực tiếp API; không cần Netlify/Firebase.</p>
+<div class="tabs">
+<button class="tab active" data-tab="overview">Tổng quan</button>
+<button class="tab" data-tab="portfolio">Danh mục</button>
+<button class="tab" data-tab="stock">Lịch sử CP</button>
+<button class="tab" data-tab="plhist">Lãi/lỗ lịch sử</button>
+<button class="tab" data-tab="backup">Backup</button>
+</div>
+</header>
+<main>
+<section id="auth" class="card authbox">
+<h2>Mở app</h2>
+<p class="muted">Mật khẩu chỉ lưu trên thiết bị. Không gửi dữ liệu lên đâu cả.</p>
+<label><span>Mật khẩu</span><input id="pass" type="password" placeholder="Nhập mật khẩu"/></label>
+<div class="row" style="margin-top:10px"><button id="login">Mở app</button><button id="resetPass" class="ghost">Đặt lại mật khẩu</button></div>
+<p id="authMsg" class="muted"></p>
+</section>
+
+<section id="app" class="hide">
+<div class="card">
+<div class="row">
+<button id="fetchAll">Fetch giá realtime</button>
+<button id="auto" class="gray">Bật cập nhật 60 giây</button>
+<button id="snapshot" class="blue">Lưu NAV hôm nay</button>
+<button id="save" class="ghost">Lưu local</button>
+<button id="export" class="ghost">Xuất backup</button>
+<button id="import" class="ghost">Nhập backup</button>
+<input id="file" type="file" accept="application/json,.csv,.txt" class="hide"/>
+<span class="spacer"></span><span id="status" class="pill">Local</span>
+</div>
+<p class="warn">Nếu API chặn CORS hoặc thiếu mã, app vẫn giữ giá cũ/giá bạn nhập thủ công. HOSE thường thử Yahoo; HNX/UPCoM có thể tùy mã.</p>
+</div>
+
+<section id="overview" class="section active">
+<div class="grid">
+<div class="metric"><div class="label">Tổng giá vốn</div><div id="mCost" class="value">0</div></div>
+<div class="metric"><div class="label">Giá trị thị trường</div><div id="mValue" class="value">0</div></div>
+<div class="metric"><div class="label">Lãi/lỗ vốn</div><div id="mPL" class="value">0</div><div id="mPLPct" class="muted">0%</div></div>
+<div class="metric"><div class="label">Biến động phiên</div><div id="mDay" class="value">0</div><div id="mDayPct" class="muted">0%</div></div>
+<div class="metric"><div class="label">Số mã</div><div id="mCount" class="value">0</div></div>
+<div class="metric"><div class="label">Top 3 tỷ trọng</div><div id="mTop3" class="value">0%</div></div>
+<div class="metric"><div class="label">Lãi nhiều nhất</div><div id="mBest" class="value">-</div></div>
+<div class="metric"><div class="label">Lỗ nhiều nhất</div><div id="mWorst" class="value">-</div></div>
+</div>
+<div class="two"><div class="card"><h2>NAV snapshot</h2><canvas id="navChart" width="1100" height="330"></canvas></div><div class="card"><h2>Phân bổ ngành</h2><canvas id="sectorChart" width="900" height="330"></canvas></div></div>
+</section>
+
+<section id="portfolio" class="section">
+<div class="card">
+<h2>Nhập / sửa danh mục</h2>
+<div class="formgrid">
+<label><span>Mã CP</span><input id="code" placeholder="VD: VHM, FPT, ABB"/></label>
+<label><span>Sàn</span><select id="exchange"><option>HOSE</option><option>HNX</option><option>UPCOM</option><option>OTHER</option></select></label>
+<label><span>Ngành</span><input id="sector" placeholder="VD: Ngân hàng"/></label>
+<label><span>Số lượng</span><input id="qty" type="number" inputmode="decimal"/></label>
+<label><span>Giá vốn TB</span><input id="cost" type="number" inputmode="decimal"/></label>
+<button id="add">Thêm / Cập nhật</button>
+</div>
+</div>
+<div class="card">
+<div class="row"><h2 style="margin-right:auto">Danh mục hiện tại</h2>
+<label style="max-width:170px"><span>Lọc ngành</span><select id="sectorFilter"><option value="">Tất cả</option></select></label>
+<label style="max-width:190px"><span>Sắp xếp</span><select id="sort"></select></label>
+<label style="max-width:130px"><span>Chiều</span><select id="dir"><option value="desc">Giảm</option><option value="asc">Tăng</option></select></label>
+<button id="clearSel" class="ghost">Bỏ chọn</button></div>
+<div class="tablewrap"><table><thead><tr>
+<th>Chọn</th><th class="sortable" data-sort="code">Mã</th><th>Sàn</th><th class="sortable" data-sort="sector">Ngành</th><th class="sortable" data-sort="qty">SL</th><th class="sortable" data-sort="cost">Giá vốn</th><th class="sortable" data-sort="price">Giá hiện tại</th><th>Đóng trước</th><th class="sortable" data-sort="value">Giá trị</th><th class="sortable" data-sort="weight">Tỷ trọng</th><th class="sortable" data-sort="pl">Lãi/lỗ vốn</th><th>% vốn</th><th>Phiên</th><th>KL</th><th>Nguồn</th><th></th>
+</tr></thead><tbody id="tbody"></tbody></table></div>
+</div>
+</section>
+
+<section id="stock" class="section">
+<div class="card">
+<div class="row"><h2 style="margin-right:auto">Lịch sử giá</h2>
+<label style="max-width:160px"><span>Mã</span><select id="detail"></select></label>
+<label style="max-width:140px"><span>Số dòng</span><select id="sessions"><option>20</option><option selected>50</option><option>100</option><option>200</option></select></label>
+<label style="max-width:140px"><span>Khung</span><select id="interval"><option value="1d">Ngày</option><option value="1wk">Tuần</option><option value="1mo">Tháng</option><option value="1h">Giờ</option><option value="15m">15 phút</option><option value="5m">5 phút</option><option value="1m">1 phút</option></select></label>
+<button id="fetchHist" class="blue">Fetch lịch sử</button>
+</div>
+<div class="grid">
+<div class="metric"><div class="label">Giá gần nhất</div><div id="dPrice" class="value">-</div></div>
+<div class="metric"><div class="label">Cao nhất</div><div id="dHigh" class="value">-</div></div>
+<div class="metric"><div class="label">Thấp nhất</div><div id="dLow" class="value">-</div></div>
+<div class="metric"><div class="label">Giá TB</div><div id="dAvg" class="value">-</div></div>
+<div class="metric"><div class="label">Tổng KL</div><div id="dVol" class="value">-</div></div>
+<div class="metric"><div class="label">KL TB</div><div id="dAvgVol" class="value">-</div></div>
+<div class="metric"><div class="label">Tăng/giảm kỳ</div><div id="dRet" class="value">-</div></div>
+<div class="metric"><div class="label">Biên độ</div><div id="dRange" class="value">-</div></div>
+</div>
+<p id="detailMsg" class="muted"></p>
+</div>
+<div class="two"><div class="card"><h2>Giá đóng cửa</h2><canvas id="priceChart" width="1100" height="350"></canvas></div><div class="card"><h2>Khối lượng</h2><canvas id="volChart" width="1100" height="350"></canvas></div></div>
+<div class="card">
+<h2>Import CSV lịch sử nếu cần</h2>
+<textarea id="histCsv" placeholder="code,date,open,high,low,close,volume&#10;VHM,2026-05-04,140000,143000,139000,142000,1000000"></textarea>
+<div class="row" style="margin-top:8px"><button id="importHist">Nhập lịch sử CSV</button></div>
+<div class="tablewrap"><table><thead><tr><th>Ngày</th><th>Mở</th><th>Cao</th><th>Thấp</th><th>Đóng</th><th>KL</th><th>% phiên</th></tr></thead><tbody id="histBody"></tbody></table></div>
+</div>
+</section>
+
+<section id="plhist" class="section">
+<div class="card">
+<div class="row"><h2 style="margin-right:auto">Lãi/lỗ lịch sử</h2>
+<label style="max-width:150px"><span>Số phiên</span><select id="plSessions"><option>20</option><option selected>50</option><option>100</option><option>200</option></select></label>
+<label style="max-width:180px"><span>Ngành</span><select id="plSector"><option value="">Tất cả</option></select></label>
+<button id="calcPL" class="blue">Tính</button></div>
+<div id="chosen" class="row"></div>
+</div>
+<div class="grid">
+<div class="metric"><div class="label">Tổng giá vốn phạm vi</div><div id="pCost" class="value">-</div></div>
+<div class="metric"><div class="label">NAV cuối kỳ</div><div id="pNav" class="value">-</div></div>
+<div class="metric"><div class="label">Lãi/lỗ cuối kỳ</div><div id="pPL" class="value">-</div></div>
+<div class="metric"><div class="label">Tỷ suất</div><div id="pPct" class="value">-</div></div>
+<div class="metric"><div class="label">Max drawdown</div><div id="pDD" class="value">-</div></div>
+<div class="metric"><div class="label">NAV cao</div><div id="pHigh" class="value">-</div></div>
+<div class="metric"><div class="label">NAV thấp</div><div id="pLow" class="value">-</div></div>
+<div class="metric"><div class="label">Số phiên</div><div id="pN" class="value">-</div></div>
+</div>
+<div class="two"><div class="card"><h2>NAV</h2><canvas id="plNavChart" width="1100" height="350"></canvas></div><div class="card"><h2>Lãi/lỗ vốn</h2><canvas id="plChart" width="1100" height="350"></canvas></div></div>
+<div class="card"><p id="plMsg" class="muted"></p><div class="tablewrap"><table><thead><tr><th>Ngày</th><th>NAV</th><th>Giá vốn</th><th>Lãi/lỗ</th><th>%</th><th>Coverage</th></tr></thead><tbody id="plBody"></tbody></table></div></div>
+</section>
+
+<section id="backup" class="section">
+<div class="card"><h2>Backup / chuyển thiết bị</h2><p class="ok">Xuất JSON từ máy 1, gửi sang máy 2 rồi nhập JSON.</p><div class="row"><button id="export2">Xuất backup</button><button id="import2" class="ghost">Nhập backup</button><button id="clearAll" class="red">Xóa tất cả</button></div></div>
+<div class="card"><h2>Snapshot NAV</h2><canvas id="navChart2" width="1100" height="330"></canvas><div class="row" style="margin-top:10px"><button id="clearSnap" class="red">Xóa snapshot</button></div><div class="tablewrap"><table><thead><tr><th>Ngày</th><th>NAV</th><th>Lãi/lỗ</th><th>%</th><th>Phiên</th></tr></thead><tbody id="snapBody"></tbody></table></div></div>
+</section>
+</section>
+</main>
+
+<script>
+const KEY="cp_local_realtime_v2",PASS="cp_local_pass_v2",$=id=>document.getElementById(id);
+let state=load(),ui={sort:"value",dir:"desc",sel:new Set()},autoTimer=null,curHist=[],plHist=[];
+const sectors={VHM:"Bất động sản",VIC:"Bất động sản",VRE:"Bất động sản",FPT:"Công nghệ thông tin",HPG:"Thép",HSG:"Thép",NKG:"Thép",VCB:"Ngân hàng",BID:"Ngân hàng",CTG:"Ngân hàng",TCB:"Ngân hàng",MBB:"Ngân hàng",ACB:"Ngân hàng",STB:"Ngân hàng",VPB:"Ngân hàng",HDB:"Ngân hàng",SHB:"Ngân hàng",ABB:"Ngân hàng",SSI:"Chứng khoán",VND:"Chứng khoán",HCM:"Chứng khoán",VCI:"Chứng khoán",MBS:"Chứng khoán",SHS:"Chứng khoán",GAS:"Dầu khí",PLX:"Dầu khí",PVD:"Dầu khí",PVS:"Dầu khí",VNM:"Thực phẩm - đồ uống",MSN:"Tiêu dùng",MWG:"Bán lẻ",PNJ:"Bán lẻ",GMD:"Cảng biển - logistics",REE:"Điện - nước",POW:"Điện",DGC:"Hóa chất",DCM:"Phân bón",DPM:"Phân bón"};
+function base(){return{holdings:[],prices:{},history:{},snaps:[]}}function load(){try{return{...base(),...(JSON.parse(localStorage.getItem(KEY))||{})}}catch{return base()}}function save(){localStorage.setItem(KEY,JSON.stringify(state));stat("Đã lưu local")}function stat(t){$("status").textContent=t}
+function n(v){let x=Number(String(v??"").replace(/,/g,"").trim());return Number.isFinite(x)?x:0}function money(v){return n(v).toLocaleString("vi-VN",{maximumFractionDigits:0})}function pct(v){return(n(v)*100).toLocaleString("vi-VN",{maximumFractionDigits:2})+"%"}function cls(v){return n(v)>=0?"good":"bad"}function clean(v){return String(v||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"")}function today(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+async function hash(t){let h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("")}
+async function login(){let p=$("pass").value.trim();if(!p)return $("authMsg").textContent="Nhập mật khẩu";let s=localStorage.getItem(PASS);if(!s){localStorage.setItem(PASS,await hash(p));openApp();return}if(await hash(p)===s)openApp();else $("authMsg").textContent="Sai mật khẩu"}function openApp(){$("auth").classList.add("hide");$("app").classList.remove("hide");render()}
+function syms(c,e){if(e==="HOSE")return[`${c}.VN`,`${c}.HM`];if(e==="HNX")return[`${c}.HN`,`${c}.VN`];if(e==="UPCOM")return[`${c}.HN`,`${c}.VN`,`${c}.UPCOM`];return[`${c}.VN`,`${c}.HM`,`${c}.HN`]}function rng(s,i){if(["1m","5m","15m"].includes(i))return s<=80?"1d":"5d";if(i==="1h")return s<=80?"1mo":"3mo";if(i==="1wk")return s<=50?"1y":"5y";if(i==="1mo")return"10y";return s<=20?"1mo":s<=50?"3mo":s<=120?"6mo":"1y"}
+async function fetchHist(c,e,s=50,i="1d"){let errs=[];for(let sym of syms(c,e)){try{let url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${rng(s,i)}&interval=${i}`;let r=await fetch(url,{cache:"no-store"});let d=await r.json();let res=d?.chart?.result?.[0];if(!r.ok||!res)throw Error(`${sym}: no result`);let q=res.indicators?.quote?.[0]||{},ts=res.timestamp||[];let out=ts.map((t,k)=>{let dd=new Date(t*1000),date=(i==="1d"||i==="1wk"||i==="1mo")?dd.toISOString().slice(0,10):dd.toISOString().replace("T"," ").slice(0,16);return{date,open:n(q.open?.[k]),high:n(q.high?.[k]),low:n(q.low?.[k]),close:n(q.close?.[k]),volume:n(q.volume?.[k])}}).filter(x=>x.close>0).slice(-s);if(!out.length)throw Error(`${sym}: no bars`);return{source:`Yahoo:${sym}`,history:out,meta:res.meta||{}}}catch(e){errs.push(e.message)}}throw Error(errs.join(" | "))}
+async function fetchPrice(h){let d=await fetchHist(h.code,h.exchange,10,"1d"),a=d.history,last=a.at(-1),prev=a.at(-2),price=n(d.meta.regularMarketPrice)||last.close,prevClose=prev?prev.close:0;return{price,prevClose,change:prevClose?price-prevClose:0,volume:n(d.meta.regularMarketVolume)||last.volume,date:last.date,source:d.source}}
+async function fetchAll(){if(!state.holdings.length)return stat("Chưa có danh mục");$("fetchAll").disabled=true;stat("Đang fetch giá...");let ok=0,fail=[];for(let h of state.holdings){try{state.prices[h.code]=await fetchPrice(h);ok++}catch(e){fail.push(h.code);console.warn(e)}}save();render();stat(fail.length?`Fetch ${ok} mã, lỗi: ${fail.join(", ")}`:`Fetch xong ${ok} mã`);$("fetchAll").disabled=false}
+function toggleAuto(){if(autoTimer){clearInterval(autoTimer);autoTimer=null;$("auto").textContent="Bật cập nhật 60 giây";$("auto").className="gray";stat("Đã tắt tự cập nhật")}else{fetchAll();autoTimer=setInterval(fetchAll,60000);$("auto").textContent="Tắt cập nhật";$("auto").className="red";stat("Đã bật tự cập nhật")}}
+function pObj(h){return state.prices[h.code]||{price:n(h.manualPrice),prevClose:0,volume:0,source:"Thủ công"}}function row(h){let p=pObj(h),price=n(p.price),prev=n(p.prevClose),chg=prev?price-prev:n(p.change),cost=n(h.qty)*n(h.cost),val=n(h.qty)*price,pl=val-cost;return{h,p,price,prev,chg,cost,val,pl,plPct:cost?pl/cost:0,day:n(h.qty)*chg,dayPct:prev?chg/prev:0,vol:n(p.volume),weight:0}}function rows(){let a=state.holdings.map(row),tv=a.reduce((s,r)=>s+r.val,0);a.forEach(r=>r.weight=tv?r.val/tv:0);return a}function total(a=rows()){return a.reduce((o,r)=>(o.cost+=r.cost,o.val+=r.val,o.pl+=r.pl,o.day+=r.day,o),{cost:0,val:0,pl:0,day:0})}
+function filtered(){let a=rows(),sec=$("sectorFilter").value;if(sec)a=a.filter(r=>r.h.sector===sec);let dir=ui.dir==="asc"?1:-1,k=ui.sort;a.sort((x,y)=>{let vx=sv(x,k),vy=sv(y,k);return typeof vx==="string"?vx.localeCompare(String(vy))*dir:(n(vx)-n(vy))*dir});return a}function sv(r,k){return k==="code"?r.h.code:k==="sector"?r.h.sector:k==="qty"?r.h.qty:k==="cost"?r.h.cost:k==="price"?r.price:k==="value"?r.val:k==="pl"?r.pl:k==="weight"?r.weight:r[k]}
+function render(){fill();metrics();table();overview();details();snaps();analytics();chosen()}function fill(){let opts=[["value","Giá trị"],["weight","Tỷ trọng"],["pl","Lãi/lỗ"],["code","Mã"],["sector","Ngành"],["price","Giá"],["qty","SL"],["cost","Giá vốn"]];$("sort").innerHTML=opts.map(o=>`<option value="${o[0]}" ${ui.sort===o[0]?"selected":""}>${o[1]}</option>`).join("");$("dir").value=ui.dir;let secs=[...new Set(state.holdings.map(h=>h.sector||"Chưa rõ"))].sort();for(let id of["sectorFilter","plSector"]){let el=$(id),cur=el.value;el.innerHTML='<option value="">Tất cả</option>'+secs.map(s=>`<option value="${s}">${s}</option>`).join("");el.value=secs.includes(cur)?cur:""}}
+function metrics(){let a=rows(),t=total(a),tp=t.cost?t.pl/t.cost:0,dp=(t.val-t.day)?t.day/(t.val-t.day):0;$("mCost").textContent=money(t.cost);$("mValue").textContent=money(t.val);$("mPL").textContent=money(t.pl);$("mPL").className="value "+cls(t.pl);$("mPLPct").textContent=pct(tp);$("mDay").textContent=money(t.day);$("mDay").className="value "+cls(t.day);$("mDayPct").textContent=pct(dp);$("mCount").textContent=a.length;let top=[...a].sort((x,y)=>y.weight-x.weight);$("mTop3").textContent=pct(top.slice(0,3).reduce((s,r)=>s+r.weight,0));let best=[...a].sort((x,y)=>y.pl-x.pl)[0],worst=[...a].sort((x,y)=>x.pl-y.pl)[0];$("mBest").textContent=best?`${best.h.code} ${money(best.pl)}`:"-";$("mBest").className="value "+(best?cls(best.pl):"");$("mWorst").textContent=worst?`${worst.h.code} ${money(worst.pl)}`:"-";$("mWorst").className="value "+(worst?cls(worst.pl):"")}
+function table(){$("tbody").innerHTML=filtered().map(r=>`<tr class="${ui.sel.has(r.h.code)?"selrow":""}"><td class="left"><input type="checkbox" data-sel="${r.h.code}" ${ui.sel.has(r.h.code)?"checked":""}></td><td class="left"><b>${r.h.code}</b><br><button class="ghost" data-hist="${r.h.code}">Lịch sử</button></td><td>${r.h.exchange}</td><td class="left">${r.h.sector}</td><td>${money(r.h.qty)}</td><td>${money(r.h.cost)}</td><td>${r.price?money(r.price):'<span class="amber">Chưa có</span>'}</td><td>${r.prev?money(r.prev):"-"}</td><td>${money(r.val)}</td><td>${pct(r.weight)}</td><td class="${cls(r.pl)}">${money(r.pl)}</td><td class="${cls(r.pl)}">${pct(r.plPct)}</td><td class="${cls(r.day)}">${money(r.day)}</td><td>${r.vol?money(r.vol):"-"}</td><td>${r.p.source||"-"}</td><td><button class="ghost" data-edit="${r.h.code}">Sửa</button> <button class="red" data-del="${r.h.code}">Xóa</button></td></tr>`).join("");document.querySelectorAll("[data-sel]").forEach(e=>e.onchange=()=>{e.checked?ui.sel.add(e.dataset.sel):ui.sel.delete(e.dataset.sel);render()});document.querySelectorAll("[data-hist]").forEach(e=>e.onclick=()=>openHist(e.dataset.hist));document.querySelectorAll("[data-edit]").forEach(e=>e.onclick=()=>edit(e.dataset.edit));document.querySelectorAll("[data-del]").forEach(e=>e.onclick=()=>del(e.dataset.del))}
+function overview(){drawLine("navChart",state.snaps,x=>n(x.val),"NAV");drawPie("sectorChart",sectorDist(),"Ngành")}function details(){let cur=$("detail").value;$("detail").innerHTML=state.holdings.map(h=>`<option>${h.code}</option>`).join("");if(state.holdings.some(h=>h.code===cur))$("detail").value=cur}function snaps(){$("snapBody").innerHTML=state.snaps.slice().reverse().map(r=>`<tr><td>${r.date}</td><td>${money(r.val)}</td><td class="${cls(r.pl)}">${money(r.pl)}</td><td class="${cls(r.pl)}">${pct(r.plPct)}</td><td class="${cls(r.day)}">${money(r.day)}</td></tr>`).join("");drawLine("navChart2",state.snaps,x=>n(x.val),"NAV")}function analytics(){drawPie("sectorChart2",sectorDist(),"Ngành");drawBars("plBarChart",[...rows()].sort((a,b)=>b.pl-a.pl).slice(0,12),x=>x.pl,"Lãi/lỗ",x=>x.h.code,true);drawBars("weightBarChart",[...rows()].sort((a,b)=>b.weight-a.weight).slice(0,12),x=>x.weight*100,"Tỷ trọng %",x=>x.h.code,false)}
+function chosen(){let list=getPLHoldings();$("chosen").innerHTML=list.map(h=>`<span class="chip">${h.code} · ${h.sector}</span>`).join("")}
+function sectorDist(){let m=new Map();for(let r of rows())m.set(r.h.sector,(m.get(r.h.sector)||0)+r.val);return[...m.entries()].map(([label,value])=>({label,value})).filter(x=>x.value>0).sort((a,b)=>b.value-a.value)}
+function add(){let code=clean($("code").value),exchange=$("exchange").value,sector=$("sector").value.trim()||sectors[code]||"Chưa rõ",qty=n($("qty").value),cost=n($("cost").value);if(!code||qty<=0||cost<=0)return alert("Nhập mã, SL, giá vốn");let old=state.holdings.find(h=>h.code===code),obj={code,exchange,sector,qty,cost};if(old)Object.assign(old,obj);else state.holdings.push(obj);["code","sector","qty","cost"].forEach(id=>$(id).value="");save();render()}
+function edit(c){let h=state.holdings.find(x=>x.code===c);if(!h)return;$("code").value=h.code;$("exchange").value=h.exchange;$("sector").value=h.sector;$("qty").value=h.qty;$("cost").value=h.cost;tab("portfolio");scrollTo({top:0,behavior:"smooth"})}function del(c){if(confirm("Xóa "+c+"?")){state.holdings=state.holdings.filter(h=>h.code!==c);delete state.prices[c];delete state.history[c];ui.sel.delete(c);save();render()}}
+function saveSnap(){let t=total();if(!t.val)return alert("Chưa có giá");let r={date:today(),cost:t.cost,val:t.val,pl:t.pl,plPct:t.cost?t.pl/t.cost:0,day:t.day};let i=state.snaps.findIndex(x=>x.date===r.date);if(i>=0)state.snaps[i]=r;else state.snaps.push(r);save();render()}
+function importHistCSV(){let count=0;parseCsv($("histCsv").value).forEach(r=>{let c=clean(r.code||r[0]);if(!c)return;state.history[c]=state.history[c]||[];let row={date:r.date||r[1],open:n(r.open||r[2]),high:n(r.high||r[3]),low:n(r.low||r[4]),close:n(r.close||r[5]),volume:n(r.volume||r[6])};if(row.date&&row.close){let i=state.history[c].findIndex(x=>x.date===row.date);if(i>=0)state.history[c][i]=row;else state.history[c].push(row);count++}});Object.keys(state.history).forEach(c=>state.history[c].sort((a,b)=>a.date.localeCompare(b.date)));save();render();alert("Đã nhập "+count+" dòng")}function parseCsv(t){let lines=t.trim().split(/\r?\n/).filter(Boolean);if(!lines.length)return[];let headers=lines[0].split(",").map(x=>x.trim()),has=headers.some(h=>["code","date","close"].includes(h));return lines.slice(has?1:0).map(line=>{let vals=line.split(",").map(x=>x.trim());if(!has)return vals;let o={};headers.forEach((h,i)=>o[h]=vals[i]);return o})}
+function openHist(c){$("detail").value=c;tab("stock");loadHist()}
+async function loadHist(){let c=$("detail").value;if(!c)return;let h=state.holdings.find(x=>x.code===c),s=n($("sessions").value)||50,i=$("interval").value;stat("Đang fetch lịch sử...");try{let d=await fetchHist(c,h.exchange,s,i);curHist=d.history;state.history[c]=merge(state.history[c]||[],curHist);save();$("detailMsg").textContent=`Nguồn: ${d.source}. Fetch ${curHist.length} dòng.`}catch(e){curHist=(state.history[c]||[]).slice(-s);$("detailMsg").textContent=`Fetch lỗi: ${e.message||e}. Dùng dữ liệu local nếu có.`}stockStats();drawLine("priceChart",curHist,x=>x.close,"Giá "+c);drawBars("volChart",curHist,x=>x.volume,"KL "+c,x=>x.date,false);$("histBody").innerHTML=curHist.slice().reverse().map((x,idx,arr)=>{let prev=arr[idx+1]?.close,ret=prev?x.close/prev-1:0;return`<tr><td>${x.date}</td><td>${money(x.open)}</td><td>${money(x.high)}</td><td>${money(x.low)}</td><td>${money(x.close)}</td><td>${money(x.volume)}</td><td class="${cls(ret)}">${prev?pct(ret):"-"}</td></tr>`}).join("");stat("Xong")}
+function merge(a,b){let m=new Map();[...a,...b].forEach(x=>m.set(x.date,x));return[...m.values()].sort((x,y)=>x.date.localeCompare(y.date))}function stockStats(){let c=curHist.map(x=>n(x.close)).filter(Boolean),h=curHist.map(x=>n(x.high)).filter(Boolean),l=curHist.map(x=>n(x.low)).filter(Boolean),v=curHist.map(x=>n(x.volume));$("dPrice").textContent=c.length?money(c.at(-1)):"-";$("dHigh").textContent=h.length?money(Math.max(...h)):"-";$("dLow").textContent=l.length?money(Math.min(...l)):"-";$("dAvg").textContent=c.length?money(c.reduce((s,x)=>s+x,0)/c.length):"-";$("dVol").textContent=money(v.reduce((s,x)=>s+x,0));$("dAvgVol").textContent=v.length?money(v.reduce((s,x)=>s+x,0)/v.length):"-";let ret=c.length>1?c.at(-1)/c[0]-1:0;$("dRet").textContent=c.length>1?pct(ret):"-";$("dRet").className="value "+cls(ret);$("dRange").textContent=h.length&&l.length?pct((Math.max(...h)-Math.min(...l))/Math.min(...l)):"-"}
+function getPLHoldings(){let chosen=[...ui.sel];if(chosen.length)return state.holdings.filter(h=>ui.sel.has(h.code));let sec=$("plSector").value;if(sec)return state.holdings.filter(h=>h.sector===sec);return state.holdings}
+function calcPL(){let list=getPLHoldings(),s=n($("plSessions").value)||50,cost=list.reduce((sum,h)=>sum+n(h.qty)*n(h.cost),0),dates=[...new Set(list.flatMap(h=>(state.history[h.code]||[]).map(x=>x.date)))].sort().slice(-s);plHist=dates.map(date=>{let val=0,cov=0;for(let h of list){let bar=(state.history[h.code]||[]).find(x=>x.date===date);if(bar){val+=n(h.qty)*n(bar.close);cov++}}return{date,val,cost,pl:val-cost,plPct:cost?(val-cost)/cost:0,cov}}).filter(x=>x.cov);let vals=plHist.map(x=>x.val),last=plHist.at(-1);drawLine("plNavChart",plHist,x=>x.val,"NAV");drawLine("plChart",plHist,x=>x.pl,"Lãi/lỗ");$("plBody").innerHTML=plHist.slice().reverse().map(r=>`<tr><td>${r.date}</td><td>${money(r.val)}</td><td>${money(r.cost)}</td><td class="${cls(r.pl)}">${money(r.pl)}</td><td class="${cls(r.pl)}">${pct(r.plPct)}</td><td>${r.cov}/${list.length}</td></tr>`).join("");$("pCost").textContent=money(cost);$("pNav").textContent=last?money(last.val):"-";$("pPL").textContent=last?money(last.pl):"-";$("pPL").className="value "+(last?cls(last.pl):"");$("pPct").textContent=last?pct(last.plPct):"-";$("pHigh").textContent=vals.length?money(Math.max(...vals)):"-";$("pLow").textContent=vals.length?money(Math.min(...vals)):"-";$("pN").textContent=plHist.length;$("pDD").textContent=vals.length?pct(maxDD(vals)):"-";$("plMsg").textContent=plHist.length?"Đã tính từ lịch sử đã fetch/import.":"Chưa có lịch sử."}
+function maxDD(vals){let peak=vals[0]||0,m=0;for(let v of vals){if(v>peak)peak=v;if(peak)m=Math.min(m,v/peak-1)}return m}
+function axes(ctx,c,pad,min,max,label){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="#667085";ctx.font="13px system-ui";ctx.strokeStyle="#e4e7ec";if(!isFinite(min)||!isFinite(max)){min=0;max=1}if(min===max){min*=.98;max=max*1.02+1}for(let i=0;i<5;i++){let y=pad+i*(c.height-pad*2)/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(c.width-pad,y);ctx.stroke();ctx.fillText(money(max-(max-min)*i/4),6,y+4)}ctx.fillStyle="#101828";ctx.font="14px system-ui";ctx.fillText(label,pad,20)}
+function drawLine(id,data,get,label){let c=$(id),ctx=c.getContext("2d"),pad=54;if(!data||!data.length){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="#667085";ctx.fillText("Chưa có dữ liệu.",24,40);return}let vals=data.map(get),min=Math.min(...vals),max=Math.max(...vals);axes(ctx,c,pad,min,max,label);let w=c.width-pad*2,h=c.height-pad*2,x=i=>pad+i*w/Math.max(1,data.length-1),y=v=>pad+h-((v-min)/((max-min)||1))*h;ctx.strokeStyle="#0f766e";ctx.lineWidth=3;ctx.beginPath();data.forEach((d,i)=>i?ctx.lineTo(x(i),y(get(d))):ctx.moveTo(x(i),y(get(d))));ctx.stroke();ctx.fillStyle="#101828";let last=data.at(-1);ctx.fillText(`${last.date||""}: ${money(get(last))}`,pad,c.height-12)}
+function drawBars(id,data,get,label,getLabel=x=>x.label,allowNeg=false){let c=$(id),ctx=c.getContext("2d"),pad=54;if(!data||!data.length){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="#667085";ctx.fillText("Chưa có dữ liệu.",24,40);return}let vals=data.map(get),min=allowNeg?Math.min(0,...vals):0,max=Math.max(...vals,1);axes(ctx,c,pad,min,max,label);let w=c.width-pad*2,h=c.height-pad*2,bw=Math.max(3,w/data.length*.62),y=v=>pad+h-((v-min)/((max-min)||1))*h,zero=y(0);data.forEach((d,i)=>{let v=get(d),x=pad+i*w/data.length,bh=Math.abs(y(v)-zero);ctx.fillStyle=v>=0?"#0f766e":"#dc2626";ctx.fillRect(x,v>=0?y(v):zero,bw,bh)})}
+function drawPie(id,data,label){let c=$(id),ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);if(!data.length){ctx.fillStyle="#667085";ctx.fillText("Chưa có dữ liệu.",24,40);return}let total=data.reduce((s,x)=>s+x.value,0),cx=c.width*.35,cy=c.height*.52,r=Math.min(c.width,c.height)*.28,colors=["#0f766e","#2563eb","#7c3aed","#dc2626","#b45309","#16a34a","#0891b2","#be123c"];let a=-Math.PI/2;data.slice(0,8).forEach((d,i)=>{let ang=d.value/total*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+ang);ctx.fillStyle=colors[i%colors.length];ctx.fill();a+=ang});ctx.fillStyle="#101828";ctx.font="14px system-ui";ctx.fillText(label,20,22);let y=34;data.slice(0,8).forEach((d,i)=>{ctx.fillStyle=colors[i%colors.length];ctx.fillRect(c.width*.62,y-10,12,12);ctx.fillStyle="#101828";ctx.fillText(`${d.label}: ${pct(d.value/total)}`,c.width*.62+18,y);y+=22})}
+function tab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===name));if(name==="backup")snaps();if(name==="analytics")analytics();if(name==="overview")overview()}
+function exportData(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="danh-muc-cp-local-realtime-backup.json";a.click();URL.revokeObjectURL(a.href)}function importData(f){let r=new FileReader();r.onload=()=>{try{state={...base(),...JSON.parse(r.result)};save();render();alert("Đã nhập backup")}catch{alert("File không đúng định dạng")}};r.readAsText(f)}
+function bind(){document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));$("login").onclick=login;$("resetPass").onclick=()=>{localStorage.removeItem(PASS);$("authMsg").textContent="Đã xóa mật khẩu."};$("fetchAll").onclick=fetchAll;$("auto").onclick=toggleAuto;$("snapshot").onclick=saveSnap;$("save").onclick=save;$("add").onclick=add;$("sort").onchange=e=>{ui.sort=e.target.value;render()};$("dir").onchange=e=>{ui.dir=e.target.value;render()};$("sectorFilter").onchange=render;$("plSector").onchange=chosen;document.querySelectorAll("th.sortable").forEach(th=>th.onclick=()=>{let k=th.dataset.sort;if(ui.sort===k)ui.dir=ui.dir==="asc"?"desc":"asc";else{ui.sort=k;ui.dir="desc"}render()});$("clearSel").onclick=()=>{ui.sel.clear();render()};$("fetchHist").onclick=loadHist;$("importHist").onclick=importHistCSV;$("calcPL").onclick=calcPL;$("export").onclick=exportData;$("export2").onclick=exportData;$("import").onclick=()=>$("file").click();$("import2").onclick=()=>$("file").click();$("file").onchange=e=>e.target.files[0]&&importData(e.target.files[0]);$("clearSnap").onclick=()=>{if(confirm("Xóa snapshot?")){state.snaps=[];save();render()}};$("clearAll").onclick=()=>{if(confirm("Xóa toàn bộ?")){state=base();save();render()}}}
+bind();render();
+</script>
+</body>
+</html>
