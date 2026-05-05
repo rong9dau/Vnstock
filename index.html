@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#0f766e"/>
+  <link rel="manifest" href="./manifest.json?v=100"/>
+  <title>Danh mục CP Pro</title>
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--text:#101828;--muted:#667085;--line:#e4e7ec;--primary:#0f766e;--primary2:#0d9488;--blue:#2563eb;--red:#dc2626;--green:#16a34a;--amber:#b45309;--purple:#7c3aed;--shadow:0 12px 30px rgba(16,32,51,.08);--radius:20px}
+    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,var(--primary),var(--primary2));color:white;padding:14px;box-shadow:var(--shadow)}
+    h1{margin:0;font-size:22px}header p{margin:4px 0 10px;opacity:.9;font-size:13px}
+    main{max-width:1240px;margin:0 auto;padding:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin:12px 0}
+    .tabs{display:flex;gap:8px;overflow-x:auto}.tab{white-space:nowrap;background:rgba(255,255,255,.17);color:white;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:9px 12px;font-weight:760}.tab.active{background:#fff;color:var(--primary)}
+    .section{display:none}.section.active{display:block}.hide{display:none!important}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.spacer{flex:1}
+    input,select,button,textarea{font:inherit;border-radius:13px;border:1px solid var(--line);padding:10px 11px;background:white;min-height:42px}input,select,textarea{width:100%}
+    button{border:0;color:white;background:var(--primary);font-weight:760;cursor:pointer}button.ghost{background:#eef2f7;color:var(--text);border:1px solid var(--line)}button.blue{background:var(--blue)}button.red{background:var(--red)}button.gray{background:#475467}button.purple{background:var(--purple)}
+    label span{display:block;color:var(--muted);font-size:12px;margin:0 0 4px 2px}
+    .authbox{max-width:620px;margin:30px auto}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{background:#f9fafb;border:1px solid var(--line);border-radius:16px;padding:12px}.metric .label{font-size:12px;color:var(--muted)}.metric .value{font-size:18px;font-weight:820;margin-top:4px}.mini{font-size:12px;color:var(--muted);margin-top:3px}
+    .formgrid{display:grid;grid-template-columns:1fr .75fr 1fr .75fr .85fr .85fr auto;gap:8px;align-items:end}
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}th,td{text-align:right;border-bottom:1px solid var(--line);padding:9px 7px;white-space:nowrap;vertical-align:middle}th:first-child,td:first-child{text-align:left}
+    th{position:sticky;top:0;background:#f9fafb;z-index:1;color:#344054;font-size:12px;text-transform:uppercase}.sortable{cursor:pointer}
+    .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:16px;max-height:590px;background:#fff}.left{text-align:left!important}.selected-row{background:#ecfdf3}
+    .good{color:var(--green)}.bad{color:var(--red)}.amber{color:var(--amber)}.muted{font-size:13px;color:var(--muted)}.pill{display:inline-block;border-radius:999px;background:#eef2f7;color:#344054;padding:5px 10px;font-size:12px}.chip{display:inline-block;border-radius:999px;background:#f2f4f7;border:1px solid var(--line);padding:7px 10px;font-size:13px}.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:10px}.ok{background:#ecfdf3;border:1px solid #bbf7d0;color:#166534;border-radius:14px;padding:10px}
+    canvas{width:100%;height:320px;border:1px solid var(--line);border-radius:16px;background:white}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}textarea{min-height:130px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+    @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}.two,.three{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr 1fr}.formgrid button{grid-column:1/-1}}
+    @media(max-width:640px){main{padding:9px}.grid{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}th,td{font-size:13px;padding:8px 5px}canvas{height:260px}.tab{padding:8px 10px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Danh mục CP Pro</h1>
+  <p>GitHub Pages + Firebase tùy chọn + API trực tiếp. Không cần Netlify.</p>
+  <div class="tabs">
+    <button class="tab active" data-tab="dashboard">Tổng quan</button>
+    <button class="tab" data-tab="portfolio">Danh mục</button>
+    <button class="tab" data-tab="prices">Giá & API</button>
+    <button class="tab" data-tab="stock">Chi tiết CP</button>
+    <button class="tab" data-tab="plhistory">Lãi/lỗ lịch sử</button>
+    <button class="tab" data-tab="analytics">Phân tích</button>
+    <button class="tab" data-tab="settings">Cài đặt</button>
+  </div>
+</header>
+<main>
+<section id="authSection" class="card authbox">
+  <h2>Đăng nhập / đăng ký</h2>
+  <p class="muted">Nếu Firebase chưa cấu hình, bấm <b>Dùng offline</b>. Với GitHub Pages cần thêm domain <b>rong9dau.github.io</b> trong Firebase Authorized domains.</p>
+  <div class="row">
+    <label style="flex:1"><span>Email</span><input id="authEmail" type="email" placeholder="email@example.com"></label>
+    <label style="flex:1"><span>Mật khẩu</span><input id="authPassword" type="password" placeholder="Tối thiểu 6 ký tự"></label>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button id="loginBtn">Đăng nhập</button><button id="registerBtn" class="blue">Đăng ký</button><button id="offlineBtn" class="ghost">Dùng offline</button>
+  </div>
+  <p id="authMsg" class="muted"></p>
+</section>
+
+<section id="appSection" class="hide">
+  <div class="card">
+    <div class="row">
+      <button id="fetchPricesBtn">Fetch giá</button><button id="autoBtn" class="gray">Bật auto 60s</button><button id="saveBtn" class="blue">Lưu</button><button id="snapshotBtn" class="ghost">Lưu NAV hôm nay</button><button id="exportBtn" class="ghost">Xuất backup</button><button id="importBtn" class="ghost">Nhập backup</button>
+      <input id="fileInput" type="file" accept="application/json,.csv,.txt" class="hide">
+      <span class="spacer"></span><span id="userBadge" class="pill">Offline</span><span id="status" class="pill">Sẵn sàng</span>
+    </div>
+    <p class="warn">Nếu API bị CORS, vào tab <b>Giá & API</b> chọn Proxy CORS = AllOrigins. Nếu vẫn lỗi thì nhập giá thủ công hoặc CSV.</p>
+  </div>
+
+  <section id="dashboard" class="section active">
+    <div class="grid">
+      <div class="metric"><div class="label">Tổng giá vốn</div><div id="mCost" class="value">0</div></div>
+      <div class="metric"><div class="label">Giá trị thị trường</div><div id="mValue" class="value">0</div></div>
+      <div class="metric"><div class="label">Lãi/lỗ vốn</div><div id="mPL" class="value">0</div><div id="mPLPct" class="mini">0%</div></div>
+      <div class="metric"><div class="label">Biến động phiên</div><div id="mDay" class="value">0</div><div id="mDayPct" class="mini">0%</div></div>
+      <div class="metric"><div class="label">Số mã</div><div id="mCount" class="value">0</div></div>
+      <div class="metric"><div class="label">Top 3 tỷ trọng</div><div id="mTop3" class="value">0%</div></div>
+      <div class="metric"><div class="label">Lãi nhiều nhất</div><div id="mBest" class="value">-</div></div>
+      <div class="metric"><div class="label">Lỗ nhiều nhất</div><div id="mWorst" class="value">-</div></div>
+    </div>
+    <div class="two"><div class="card"><h2>NAV snapshot</h2><canvas id="navChart" width="1100" height="340"></canvas></div><div class="card"><h2>Phân bổ ngành</h2><canvas id="sectorChart" width="900" height="340"></canvas></div></div>
+    <div class="card"><h2>Top tỷ trọng</h2><div class="tablewrap"><table><thead><tr><th>Mã</th><th>Ngành</th><th>Giá trị</th><th>Tỷ trọng</th><th>Lãi/lỗ</th></tr></thead><tbody id="topWeightBody"></tbody></table></div></div>
+  </section>
+
+  <section id="portfolio" class="section">
+    <div class="card">
+      <h2>Nhập / sửa danh mục</h2>
+      <div class="formgrid">
+        <label><span>Mã CP</span><input id="code" placeholder="VD: VHM, FPT, ABB"></label>
+        <label><span>Sàn</span><select id="exchange"><option>HOSE</option><option>HNX</option><option>UPCOM</option><option>OTHER</option></select></label>
+        <label><span>Ngành</span><input id="sector" placeholder="Tự gợi ý nếu bỏ trống"></label>
+        <label><span>Số lượng</span><input id="qty" type="number" inputmode="decimal"></label>
+        <label><span>Giá vốn TB</span><input id="cost" type="number" inputmode="decimal"></label>
+        <label><span>Giá thủ công</span><input id="manualPrice" type="number" inputmode="decimal" placeholder="Nếu API lỗi"></label>
+        <button id="addBtn">Thêm / Cập nhật</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row">
+        <h2 style="margin-right:auto">Danh mục hiện tại</h2>
+        <label style="max-width:170px"><span>Lọc ngành</span><select id="sectorFilter"></select></label>
+        <label style="max-width:190px"><span>Sắp xếp</span><select id="sortSelect"></select></label>
+        <label style="max-width:130px"><span>Chiều</span><select id="sortDir"><option value="desc">Giảm dần</option><option value="asc">Tăng dần</option></select></label>
+        <button id="clearSelectionBtn" class="ghost">Bỏ chọn</button>
+      </div>
+      <div class="tablewrap"><table><thead><tr>
+        <th>Chọn</th><th class="sortable" data-sort="code">Mã</th><th>Sàn</th><th class="sortable" data-sort="sector">Ngành</th><th class="sortable" data-sort="qty">SL</th><th class="sortable" data-sort="cost">Giá vốn</th><th class="sortable" data-sort="price">Giá hiện tại</th><th>Đóng trước</th><th class="sortable" data-sort="value">Giá trị</th><th class="sortable" data-sort="weight">Tỷ trọng</th><th class="sortable" data-sort="pl">Lãi/lỗ</th><th>%</th><th>Phiên</th><th>KL</th><th>Nguồn</th><th></th>
+      </tr></thead><tbody id="holdingsBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="prices" class="section">
+    <div class="card">
+      <h2>Cấu hình API / Proxy</h2>
+      <div class="row">
+        <label style="max-width:230px"><span>Thứ tự nguồn</span><select id="providerOrder"><option value="tcbs-yahoo">TCBS → Yahoo</option><option value="yahoo-tcbs">Yahoo → TCBS</option><option value="tcbs">Chỉ TCBS</option><option value="yahoo">Chỉ Yahoo</option></select></label>
+        <label style="max-width:210px"><span>Proxy CORS</span><select id="proxyMode"><option value="none">Không dùng</option><option value="allorigins">AllOrigins</option><option value="custom">Custom</option></select></label>
+        <label style="flex:1"><span>Custom proxy, dùng {url}</span><input id="proxyTemplate" placeholder="https://api.allorigins.win/raw?url={url}"></label>
+        <button id="saveSettingsBtn">Lưu cấu hình</button>
+      </div>
+    </div>
+    <div class="card"><h2>Cập nhật giá thủ công nhanh</h2><div class="tablewrap"><table><thead><tr><th>Mã</th><th>Giá hiện tại</th><th>Đóng cửa trước</th><th>KL</th><th>Ngày</th><th></th></tr></thead><tbody id="priceEditBody"></tbody></table></div></div>
+    <div class="card"><h2>Nhập CSV giá hiện tại</h2><p class="muted">CSV: code,price,prevClose,volume,date</p><textarea id="priceCsv" placeholder="code,price,prevClose,volume,date&#10;VHM,142000,141000,1000000,2026-05-04"></textarea><div class="row" style="margin-top:8px"><button id="importPriceCsvBtn">Nhập giá CSV</button></div></div>
+  </section>
+
+  <section id="stock" class="section">
+    <div class="card">
+      <div class="row">
+        <h2 style="margin-right:auto">Chi tiết cổ phiếu</h2>
+        <label style="max-width:160px"><span>Mã</span><select id="detailSelect"></select></label>
+        <label style="max-width:140px"><span>Số dòng</span><select id="stockSessions"><option>20</option><option selected>50</option><option>100</option><option>200</option></select></label>
+        <label style="max-width:150px"><span>Khung</span><select id="interval"><option value="1d">Ngày</option><option value="1wk">Tuần</option><option value="1mo">Tháng</option><option value="1h">Giờ</option><option value="15m">15 phút</option><option value="5m">5 phút</option><option value="1m">1 phút</option></select></label>
+        <button id="loadStockHistoryBtn" class="blue">Fetch lịch sử</button>
+      </div>
+      <div class="grid">
+        <div class="metric"><div class="label">Giá gần nhất</div><div id="dPrice" class="value">-</div></div>
+        <div class="metric"><div class="label">Cao nhất</div><div id="dHigh" class="value">-</div></div>
+        <div class="metric"><div class="label">Thấp nhất</div><div id="dLow" class="value">-</div></div>
+        <div class="metric"><div class="label">Giá TB</div><div id="dAvg" class="value">-</div></div>
+        <div class="metric"><div class="label">Tổng KL</div><div id="dVol" class="value">-</div></div>
+        <div class="metric"><div class="label">KL TB</div><div id="dAvgVol" class="value">-</div></div>
+        <div class="metric"><div class="label">Tăng/giảm kỳ</div><div id="dRet" class="value">-</div></div>
+        <div class="metric"><div class="label">Biên độ</div><div id="dRange" class="value">-</div></div>
+      </div><p id="detailMsg" class="muted"></p>
+    </div>
+    <div class="two"><div class="card"><h2>Giá đóng cửa</h2><canvas id="priceChart" width="1100" height="350"></canvas></div><div class="card"><h2>Khối lượng</h2><canvas id="volumeChart" width="1100" height="350"></canvas></div></div>
+    <div class="card"><h2>Import CSV lịch sử</h2><p class="muted">CSV: code,date,open,high,low,close,volume</p><textarea id="historyCsv" placeholder="code,date,open,high,low,close,volume&#10;VHM,2026-05-04,140000,143000,139000,142000,1000000"></textarea><div class="row" style="margin-top:8px"><button id="importHistoryCsvBtn">Nhập lịch sử CSV</button></div><div class="tablewrap"><table><thead><tr><th>Ngày</th><th>Mở</th><th>Cao</th><th>Thấp</th><th>Đóng</th><th>KL</th><th>% phiên</th></tr></thead><tbody id="stockHistoryBody"></tbody></table></div></div>
+  </section>
+
+  <section id="plhistory" class="section">
+    <div class="card">
+      <div class="row"><h2 style="margin-right:auto">Lãi/lỗ lịch sử</h2><label style="max-width:150px"><span>Số phiên</span><select id="portfolioSessions"><option>20</option><option selected>50</option><option>100</option><option>200</option></select></label><label style="max-width:180px"><span>Ngành</span><select id="historySector"></select></label><button id="calcPortfolioHistoryBtn" class="blue">Tính</button></div>
+      <div id="chosenChips" class="row"></div>
+    </div>
+    <div class="grid">
+      <div class="metric"><div class="label">Tổng giá vốn phạm vi</div><div id="pCost" class="value">-</div></div>
+      <div class="metric"><div class="label">NAV cuối kỳ</div><div id="pNav" class="value">-</div></div>
+      <div class="metric"><div class="label">Lãi/lỗ cuối kỳ</div><div id="pPL" class="value">-</div></div>
+      <div class="metric"><div class="label">Tỷ suất</div><div id="pPct" class="value">-</div></div>
+      <div class="metric"><div class="label">Max drawdown</div><div id="pDD" class="value">-</div></div>
+      <div class="metric"><div class="label">NAV cao</div><div id="pHigh" class="value">-</div></div>
+      <div class="metric"><div class="label">NAV thấp</div><div id="pLow" class="value">-</div></div>
+      <div class="metric"><div class="label">Số phiên</div><div id="pN" class="value">-</div></div>
+    </div>
+    <div class="two"><div class="card"><h2>NAV</h2><canvas id="portfolioChart" width="1100" height="350"></canvas></div><div class="card"><h2>Lãi/lỗ vốn</h2><canvas id="portfolioPLChart" width="1100" height="350"></canvas></div></div>
+    <div class="card"><p id="portfolioMsg" class="muted"></p><div class="tablewrap"><table><thead><tr><th>Ngày</th><th>NAV</th><th>Giá vốn</th><th>Lãi/lỗ</th><th>%</th><th>Coverage</th></tr></thead><tbody id="portfolioHistoryBody"></tbody></table></div></div>
+  </section>
+
+  <section id="analytics" class="section">
+    <div class="three"><div class="card"><h2>Phân bổ ngành</h2><canvas id="sectorChart2" width="720" height="350"></canvas></div><div class="card"><h2>Top lãi/lỗ</h2><canvas id="plBarChart" width="720" height="350"></canvas></div><div class="card"><h2>Tỷ trọng mã</h2><canvas id="weightBarChart" width="720" height="350"></canvas></div></div>
+    <div class="card"><h2>Số liệu chuyên sâu</h2><div class="tablewrap"><table><thead><tr><th>Nhóm</th><th>Giá trị</th><th>Ghi chú</th></tr></thead><tbody id="analyticsBody"></tbody></table></div></div>
+  </section>
+
+  <section id="settings" class="section">
+    <div class="card"><h2>Cài đặt / đồng bộ</h2><div class="row"><button id="logoutBtn" class="red">Đăng xuất</button><button id="forceSaveBtn" class="blue">Lưu lên cloud</button><button id="forceLoadBtn" class="ghost">Tải từ cloud</button><button id="exportBtn2" class="ghost">Xuất backup</button><button id="importBtn2" class="ghost">Nhập backup</button><button id="clearAllBtn" class="red">Xóa local</button></div></div>
+    <div class="card"><h2>Snapshot NAV</h2><canvas id="navChart2" width="1100" height="330"></canvas><div class="row" style="margin-top:10px"><button id="clearSnapshotBtn" class="red">Xóa snapshot</button></div><div class="tablewrap"><table><thead><tr><th>Ngày</th><th>NAV</th><th>Lãi/lỗ</th><th>%</th><th>Phiên</th></tr></thead><tbody id="snapshotBody"></tbody></table></div></div>
+  </section>
+</section>
+<script type="module" src="./app.js?v=100"></script>
+</main>
+</body>
+</html>

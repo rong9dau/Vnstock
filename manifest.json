@@ -1,0 +1,9 @@
+{
+  "name": "Danh mục CP Pro",
+  "short_name": "CP Pro",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0f766e",
+  "icons": []
+}

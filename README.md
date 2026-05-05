@@ -1,39 +1,23 @@
-# Danh mục CP Pro - GitHub Pages
+# Danh mục CP Pro - GitHub Pages v100
 
-Bản này chạy trên GitHub Pages, không dùng Netlify Functions.
+## Upload GitHub
+Upload toàn bộ file vào gốc repo:
+- index.html
+- app.js
+- firebase-config.js
+- manifest.json
+- service-worker.js
+- README.md
 
-## Tính năng
-- Firebase Auth + Firestore sync tùy chọn.
-- Chạy offline/local nếu chưa cấu hình Firebase.
-- Fetch giá/lịch sử trực tiếp từ trình duyệt: TCBS -> Yahoo.
-- Có Proxy CORS tùy chọn: AllOrigins hoặc custom template.
-- Danh mục sortable/filter/select.
-- Lịch sử giá theo ngày/tuần/tháng/giờ/phút nếu nguồn có dữ liệu.
-- Lãi/lỗ lịch sử toàn danh mục/theo ngành/theo mã tick chọn.
-- Backup/restore JSON.
-
-## Cài lên GitHub Pages
-1. Tạo repo GitHub.
-2. Upload toàn bộ file trong thư mục này vào gốc repo:
-   - index.html
-   - app.js
-   - firebase-config.js
-   - manifest.json
-   - service-worker.js
-3. Repo -> Settings -> Pages.
-4. Source: Deploy from a branch.
-5. Branch: main, folder: /root.
-6. Mở link GitHub Pages được cấp.
+Repo -> Settings -> Pages -> Deploy from branch -> main -> /root.
 
 ## Firebase
 Nếu dùng Firebase:
-1. Copy config Firebase Web vào firebase-config.js.
-2. Firebase Auth -> Sign-in method -> bật Email/Password.
-3. Firebase Auth -> Settings -> Authorized domains -> thêm:
-   ten-user.github.io
+1. Dán config thật vào firebase-config.js.
+2. Firebase Authentication -> Sign-in method -> bật Email/Password.
+3. Firebase Authentication -> Settings -> Authorized domains -> thêm: rong9dau.github.io
 4. Firestore Rules:
 
-```js
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -42,8 +26,3 @@ service cloud.firestore {
     }
   }
 }
-```
-
-## Lưu ý API
-GitHub Pages là web tĩnh. API phải cho phép CORS để trình duyệt fetch được.
-Nếu lỗi CORS, vào tab "Giá & API" -> Proxy CORS -> AllOrigins.
